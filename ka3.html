@@ -41,6 +41,7 @@
 </head>
 <body>
     <h1>Data Rekam Konsumsi Energi Kamar 3</h1>
+    <p id="demo">tes</p>
     <div class="container">
 
         <table>
@@ -49,18 +50,22 @@
                     <th>hari</th>
                     <th>data</th>
                     <th>Biaya</th>
+                    <th>rekap total</th>
                    
                 </tr>
+                
             </thead>
             <tbody>
             </tbody>
         </table>
     </div>
- 
 <!-- add firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-database-compat.js"></script>
-
+<script
+  src="https://code.jquery.com/jquery-3.7.1.js"
+  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  crossorigin="anonymous"></script>
 <script>
     const firebaseConfig = {
         databaseURL: "https://warudoyong-61e70-default-rtdb.firebaseio.com"
@@ -74,45 +79,61 @@
     // give complete path to fetch data as given during sending
     var fetchedData = database.ref('Data3')
 
+
+
     fetchedData.on('value', (snapshot,prevChildKey) => {
         var data = snapshot.val()
         // now set data in table
         let eventValue = snapshot.val();
-        console.log(prevChildKey)
+        // create a variable for the sum and initialize it
+        let sum = 0;
         var htmlData = ''
         for(var key in data){
 
-            var value = data[key]
-            console.log([key])
-            var dateEvent = new Date(eventValue.date).toLocaleDateString("en-US", {
+        var value    = data[key]
+        sum += (data[key]);
+           
+    var dateEvent = new Date(eventValue.date).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric",
-      })
+      }
+    )
       
       .split(", ");
+ 
       
        // console.log(dateEvent); //["Thursday", "July 9", "2020"]
     //let dayOfMonth = dateEvent[1].split(" ")[1];
     //let dayOfWeek = dateEvent[0];
     //let shortDate = dateEvent[1].split(" ")[0] + ", " + dateEvent[2];
+    document.getElementById("demo").innerHTML = "Rekap" +" "+"Rp" +" " +Math.ceil(sum*1352);
+   //console.log(cek_data)
 
-            
-            
+    //document.getElementById("demo").innerHTML = sum.findLast(checkAge);
             htmlData += `
                 <tr>
                     <td>${key}</td>
                     <td>${value}</td>
                     <td> ${ "Rp" +" " +Math.ceil( value*1352 )}</td>
+                    <td> ${ "Rp" +" " + Math.ceil(sum*1352)}</td>
+                    
+
                 </tr>
+          
+               
             `;
         }
         // we use unique id's as reference to delete and update data
         dataContainer.innerHTML = htmlData
     })
 
-    
+    // remove message function
+    function removeMess(uniqueId){
+        database.ref('messages/' + uniqueId).remove()
+        
+    }
 
 </script>
 </body>
